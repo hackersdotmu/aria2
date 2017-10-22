@@ -55,6 +55,7 @@ namespace {
 #if !defined(__MAC_10_8)
 static const SSLProtocol kTLSProtocol11 = (SSLProtocol)(kSSLProtocolAll + 1);
 static const SSLProtocol kTLSProtocol12 = (SSLProtocol)(kSSLProtocolAll + 2);
+static const SSLProtocol kTLSProtocol13 = (SSLProtocol)(kSSLProtocolAll + 3);
 #endif
 
 #ifndef CIPHER_NO_DHPARAM
@@ -92,6 +93,8 @@ static inline const char* protoToString(SSLProtocol proto)
     return "TLSv1.1";
   case kTLSProtocol12:
     return "TLSv1.2";
+  case kTLSProtocol13:
+    return "TLSv1.3";
   default:
     return "Unknown";
   }
@@ -405,6 +408,8 @@ AppleTLSSession::AppleTLSSession(AppleTLSContext* ctx)
   // fall through
   case TLS_PROTO_TLS12:
     (void)SSLSetProtocolVersionEnabled(sslCtx_, kTLSProtocol12, true);
+  case TLS_PROTO_TLS13:
+    (void)SSLSetProtocolVersionEnabled(sslCtx_, kTLSProtocol13, true);
   default:
     break;
   }
@@ -759,6 +764,8 @@ int AppleTLSSession::tlsConnect(const std::string& hostname,
     break;
   case kTLSProtocol12:
     version = TLS_PROTO_TLS12;
+  case kTLSProtocol13:
+    version = TLS_PROTO_TLS13;
     break;
   default:
     version = TLS_PROTO_NONE;
