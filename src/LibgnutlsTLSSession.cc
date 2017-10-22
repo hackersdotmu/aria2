@@ -55,8 +55,6 @@ TLSVersion getProtocolFromSession(gnutls_session_t& session)
     return TLS_PROTO_TLS11;
   case GNUTLS_TLS1_2:
     return TLS_PROTO_TLS12;
-  case GNUTLS_TLS1_3:
-    return TLS_PROTO_TLS13;
   default:
     return TLS_PROTO_NONE;
   }
@@ -135,8 +133,6 @@ int GnuTLSSession::init(sock_t sockfd)
 #else
   std::string pri = "SECURE128:+SIGN-RSA-SHA1";
   switch (tlsContext_->getMinTLSVersion()) {
-  case TLS_PROTO_TLS13:
-    pri += ":-VERS-TLS1.2";
   case TLS_PROTO_TLS12:
     pri += ":-VERS-TLS1.1";
   // fall through
