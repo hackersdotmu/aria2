@@ -112,6 +112,8 @@ OpenSSLTLSContext::OpenSSLTLSContext(TLSSessionSide side, TLSVersion minVer)
 
   long ver_opts = 0;
   switch (minVer) {
+  case TLS_PROTO_TLS13:
+    ver_opts |= SSL_OP_NO_TLSv1_2;
   case TLS_PROTO_TLS12:
     ver_opts |= SSL_OP_NO_TLSv1_1;
   // fall through
@@ -139,12 +141,13 @@ OpenSSLTLSContext::OpenSSLTLSContext(TLSSessionSide side, TLSVersion minVer)
   /* keep memory usage low */
   SSL_CTX_set_mode(sslCtx_, SSL_MODE_RELEASE_BUFFERS);
 #endif
+#ifndef TLS1_3_VERSION
   if (SSL_CTX_set_cipher_list(sslCtx_, "HIGH:!aNULL:!eNULL") == 0) {
     good_ = false;
     A2_LOG_ERROR(fmt("SSL_CTX_set_cipher_list() failed. Cause: %s",
                      ERR_error_string(ERR_get_error(), nullptr)));
   }
-
+#endif //TLS1_3_VERSION
 #if OPENSSL_VERSION_NUMBER >= 0x0090800fL
 #ifndef OPENSSL_NO_ECDH
   auto ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
